@@ -6,7 +6,7 @@ port = 2004
 split = []
 
 def split_file(filename):
-    with open("files/"+filename, "rb") as in_file:
+    with open("../files/"+filename, "rb") as in_file:
         bytes = in_file.read(200) 
         while bytes:
             split.append(bytes)
@@ -16,7 +16,6 @@ if __name__ == "__main__":
     try: ClientMultiSocket.connect((host, port))
     except socket.error as e: print(str(e))
     res = ClientMultiSocket.recv(1024)
-    print(res.decode('utf-8'))
 
     while True:
         f = input('Escribe el nombre del archivo: ')

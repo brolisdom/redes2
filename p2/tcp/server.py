@@ -25,35 +25,35 @@ def merge_files(filename, client, i):
         bytes = tmp.read(200)
         f.write(bytes)
     f.close()
+    print('Proceso de cliente '+client+' finalizado!')
 
 def multi_threaded_client(connection, client):
-    res = 'Se le ha asignado el cliente: '+client
+    res = 'Almacenando info del cliente '+client
     connection.send(str.encode(res))
-    # print(res)
+
     i = -1
     while True:
         data = connection.recv(2048)
-        if i < 0: filename = data.decode('utf-8')
+        if i < 0: 
+            print(res)
+            filename = data.decode('utf-8')
         else:
             if not data: break
             save_into(client, str(i), data)
             response = 'Chunk '+str(i)+' almacenado'
             connection.sendall(str.encode(response))
         i += 1
-    print('Reconstruyendo archivo del cliente '+client)
     merge_files(filename, client, i)
-    print('Proceso de cliente '+client+' finalizado!')
     connection.close()
 
 if __name__ == "__main__":
     try: ServerSideSocket.bind((host, port))
     except socket.error as e: print(str(e))
-    print('Servidor en escucha')
+    print('Servidor en escucha...')
     ServerSideSocket.listen(5)
 
     while True:
         count += 1
         Client, address = ServerSideSocket.accept()
-        print('Nueva conexion: ' + address[0] + ':' + str(address[1]))
         start_new_thread(multi_threaded_client, (Client, str(count)))
     ServerSideSocket.close()
